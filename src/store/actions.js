@@ -11,6 +11,7 @@ export const USER_DETAIL_SUCCESS = 'USER_DETAIL_SUCCESS';
 export const USER_DETAIL_CLEAR = 'USER_DETAIL_CLEAR';
 export const USER_EDIT_SUCCESS = 'USER_EDIT_SUCCESS';
 export const CLOSE_SNACK = 'CLOSE_SNACK';
+export const SET_SNACK_MESSAGE = 'SET_SNACK_MESSAGE';
 
 
 export function fetchUsers(id) {
@@ -51,6 +52,7 @@ export function fetchEditUser(data) {
       .then(handleErrors)
       .then(response => response.json())
       .then(json => dispatch(fetchEditUserSuccess(json)))
+      .then(() => dispatch(setSnackMessage('Saved!')))
       .catch(error => dispatch(fetchUsersError(error)));
   }
 }
@@ -120,6 +122,10 @@ export const fetchUsersError = error => ({
 
 export const closeSnackAction = () => ({
   type: CLOSE_SNACK,
+});
+export const setSnackMessage = (message) => ({
+  type: SET_SNACK_MESSAGE,
+  payload: {error: {message: message}},
 });
 
 

@@ -26,7 +26,7 @@ class UserEditContainer extends Component {
   }
 
   render() {
-    const {userInstance} = this.props;
+    let {userInstance} = this.props;
 
     let loadForm = !!userInstance.id
 

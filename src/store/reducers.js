@@ -10,6 +10,7 @@ import {
     USER_DETAIL_CLEAR,
     USER_DETAIL_SUCCESS,
     USER_EDIT_SUCCESS,
+    SET_SNACK_MESSAGE,
 } from './actions'
 
 const initialState = {
@@ -81,7 +82,13 @@ function users(state = initialState, action) {
         snackOpen: false,
         snackMessage: {},
         error: {}
-
+      }
+    case SET_SNACK_MESSAGE:
+      return {
+        ...state,
+        snackOpen: true,
+        snackMessage: action.payload.error,
+        error: {}
       }
     default:
       return state
