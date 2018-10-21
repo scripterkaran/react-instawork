@@ -5,7 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button/Button";
 import SimpleSnackbar from "./shared/SimpleSnackbar";
-import {closeSnackAction} from "../store/actions";
+import {closeSnackAction, setSnackMessage} from "../store/actions";
 import {connect} from "react-redux";
 
 const styles = theme => ({
@@ -56,12 +56,24 @@ class UserForm extends React.Component {
   };
 
   handleChange = name => event => {
+    if (name === 'phone_number') {
+      if (isNaN(event.target.value)) {
+        this.setState({
+          [name]: 0,
+        });
+        return // imp
+      }
+    }
     this.setState({
       [name]: event.target.value,
     });
   };
 
   emitSubmit() {
+    if (this.state.first_name === '' || this.state.last_name === '' || this.state.username === '') {
+      this.props.dispatch(setSnackMessage('Please fill all the required fields'))
+      return // imp
+    }
     let {handleSubmit} = this.props
     handleSubmit(this.state)
     this.resetState()
@@ -118,7 +130,6 @@ class UserForm extends React.Component {
           margin="normal"/>
 
         <TextField
-          required
           id="standard-email"
           label="Email"
           type="email"
@@ -131,12 +142,12 @@ class UserForm extends React.Component {
         <TextField
           id="standard-phone"
           label="Phone"
-          type="number"
+          type="text"
           className={classes.textField}
           value={this.state.phone_number}
           onChange={this.handleChange('phone_number')}
           margin="normal"
-          helperText="Enter with country code ex: +919964452344"
+          helperText="Enter with country code ex: 919964452344"
         />
 
 
@@ -155,7 +166,7 @@ class UserForm extends React.Component {
           margin="normal"
         >
           {roles.map(option => (
-            <MenuItem key={option.value} value={option.value}>
+            <MenuItem key={option.value} value={option.value} className={classes.dropSelect}>
               {option.label}
             </MenuItem>
           ))}
