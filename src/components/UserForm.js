@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button/Button";
 import SimpleSnackbar from "./shared/SimpleSnackbar";
 import {closeSnackAction, setSnackMessage} from "../store/actions";
 import {connect} from "react-redux";
+import PhoneNumberField from "./shared/PhoneNumberField";
 
 const styles = theme => ({
   container: {
@@ -54,6 +55,19 @@ class UserForm extends React.Component {
     username: '',
     ...this.props.user
   };
+  componentDidMount() {
+    this.props.onRef(this)
+
+    if (this.props.user) {
+      if (this.props.user.phone_number) {
+         // separate out the + from database field for HTML
+         this.setState({phone_number :this.props.user.phone_number.substring(1)});
+      }
+    }
+  }
+  componentWillUnmount() {
+    this.props.onRef(undefined)
+  }
 
   handleChange = name => event => {
     if (name === 'phone_number') {
@@ -71,12 +85,17 @@ class UserForm extends React.Component {
 
   emitSubmit() {
     if (this.state.first_name === '' || this.state.last_name === '' || this.state.username === '') {
-      this.props.dispatch(setSnackMessage('Please fill all the required fields'))
+      this.props.dispatch(setSnackMessage('Please fill all the required fields'));
       return // imp
     }
-    let {handleSubmit} = this.props
-    handleSubmit(this.state)
-    if (!this.state.id)this.resetState() // rest form only when it was newly added
+    let state_copy = Object.assign({},this.state);
+    // patch up phone number if entered
+    if (state_copy.phone_number && state_copy.phone_number.substring(1) !== '+'){
+      state_copy.phone_number = `+${state_copy.phone_number}`
+    }
+    let {handleSubmit} = this.props;
+    handleSubmit(state_copy)
+    // if (!this.state.id) this.resetState() // rest form only when it was newly added
   }
 
   resetState() {
@@ -97,8 +116,8 @@ class UserForm extends React.Component {
     let buttonComponent = (
       <Button color="secondary" className={classes.button} onClick={() => (handleDelete(this.state))}>
         DELETE
-      </Button>)
-    let deleteButton = user && user.id ? buttonComponent : ''
+      </Button>);
+    let deleteButton = user && user.id ? buttonComponent : '';
 
     return (
       <div className={classes.container}>
@@ -139,16 +158,17 @@ class UserForm extends React.Component {
           margin="normal"
         />
 
-        <TextField
-          id="standard-phone"
-          label="Phone"
-          type="text"
-          className={classes.textField}
-          value={this.state.phone_number}
-          onChange={this.handleChange('phone_number')}
-          margin="normal"
-          helperText="Enter with country code ex: 919964452344"
-        />
+        <PhoneNumberField classes={classes} phone_number={this.state.phone_number} handleChange={this.handleChange}/>
+        {/*<TextField*/}
+        {/*id="standard-phone"*/}
+        {/*label="Phone"*/}
+        {/*type="number"*/}
+        {/*className={classes.textField}*/}
+        {/*value={this.state.phone_number}*/}
+        {/*onChange={this.handleChange('phone_number')}*/}
+        {/*margin="normal"*/}
+        {/*helperText="Enter with country code ex: 919964452344"*/}
+        {/*/>*/}
 
 
         <TextField

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
-import {fetchAddUsers, fetchUsers} from '../store/actions'
+import {FETCH_USERS_FAILURE, fetchAddUsers, fetchUsers, setSnackMessage} from '../store/actions'
 import UserForm from "./UserForm";
 import UserList from "./UserList";
 import {withStyles} from "@material-ui/core";
@@ -20,6 +20,7 @@ class UserContainer extends Component {
   constructor(props) {
     super(props);
     this.formRef = React.createRef();
+    this.child = null
   }
 
   componentDidMount() {
@@ -27,11 +28,13 @@ class UserContainer extends Component {
   }
 
   addUser(data) {
-    this.props.dispatch(fetchAddUsers({
-      ...data
-    })).then(() => {
-      // debugger
-      // self.formRef.current.resetState()
+    let self = this
+    this.props.dispatch(fetchAddUsers(data)).then((res) => {
+      if (res.type === FETCH_USERS_FAILURE) {
+      } else {
+        setSnackMessage({'message': 'Added'})
+        self.child.resetState()
+      }
     })
   }
 
@@ -47,7 +50,7 @@ class UserContainer extends Component {
     }
     return (
       <div className={classes.container}>
-        <UserForm ref={this.formRef} handleSubmit={(data) => {
+        <UserForm onRef={ref => (this.child = ref)} ref={this.formRef} handleSubmit={(data) => {
           this.addUser(data)
         }}/>
         <UserList loading={true}

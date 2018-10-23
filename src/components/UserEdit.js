@@ -12,15 +12,11 @@ class UserEditContainer extends Component {
   }
 
   editUser(data) {
-    this.props.dispatch(fetchEditUser({
-      ...data
-    }))
+    this.props.dispatch(fetchEditUser(data)).then()
   }
 
   deleteUser(data) {
-    this.props.dispatch(fetchDeleteUser({
-      ...data
-    })).then(() => {
+    this.props.dispatch(fetchDeleteUser(data)).then(() => {
       this.props.history.replace('')
     })
   }
